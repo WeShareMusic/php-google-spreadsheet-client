@@ -56,7 +56,7 @@ class Worksheet
      */
     public function getRawXml()
     {
-        return $xml;
+        return $this->xml;
     }
 
     /**
