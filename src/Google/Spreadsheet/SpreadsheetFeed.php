@@ -28,6 +28,8 @@ use SimpleXMLElement;
  */
 class SpreadsheetFeed extends ArrayIterator
 {
+    const ALTERNATE_SPREADSHEET_URL_PREFIX = "https://spreadsheets.google.com/ccc?key=";
+
     /**
      * The spreadsheet feed xml object
      * 
@@ -71,18 +73,20 @@ class SpreadsheetFeed extends ArrayIterator
     }
 
     /**
-     * Gets a spreadhseet from the feed by its id. i.e. the id of 
+     * Gets a spreadhseet from the feed by its Google Drive Id. i.e. the id of 
      * the spreadsheet in google drive.
      * 
      * @param string $id
      * 
      * @return \Google\Spreadsheet\Spreadsheet|null
      */
-    public function getById($id)
+    public function getByGoogleDriveId($id)
     {
         foreach($this->xml->entry as $entry) {
-            if($entry->id->__toString() == $id) {
-                return new Spreadsheet($entry);
+            foreach($entry->link as $link) {
+                if($link->attributes()->rel == "alternate" && $link->attributes()->href == self::ALTERNATE_SPREADSHEET_URL_PREFIX.$id) {
+                    return new Spreadsheet($entry);
+                }
             }
         }
         return null;
